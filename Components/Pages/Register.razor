@@ -1,0 +1,10 @@
+@page "/register/{studentId:int}"
+<h1>Register</h1>
+
+<h3>StudentID: @StudentId</h3>
+
+@code {
+    [Parameter]
+    public int StudentId { get; set; }
+    
+}

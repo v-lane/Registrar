@@ -1,10 +1,13 @@
 @page "/"
+@inject NavigationManager Nav 
+@rendermode InteractiveServer
+
 
 <PageTitle>Students</PageTitle>
 
 <header class="d-flex justify-content-between">
     <h1>Students</h1>
-    <button class="btn btn-info px-3 m-1">+</button>
+    <button class="btn btn-info px-3 m-1" @onclick="NavigateToNewStudent">+</button>
 </header>
 
 <table class="table">
@@ -31,7 +34,7 @@
             <td>@student.FirstName</td>
             <td>@student.LastName</td>
             <td>@student.Type</td>
-            <td>[Register link]</td>
+            <td><button class="btn btn-outline-secondary" @onclick="(() => NavigateToRegister(@student.Id))">Register</button></td>
         </tr>
         rowCount += 1;
     }
@@ -42,5 +45,15 @@
 
 @code {
 
+    private void NavigateToRegister(int id)
+    {
+        // to /register/{Id:int}
+        Nav.NavigateTo($"/register/{id}");
+    }
+
+    private void NavigateToNewStudent()
+    {
+        Nav.NavigateTo("/newstudent");
+    }
 
 }
