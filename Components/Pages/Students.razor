@@ -1,0 +1,46 @@
+@page "/"
+
+<PageTitle>Students</PageTitle>
+
+<header class="d-flex justify-content-between">
+    <h1>Students</h1>
+    <button class="btn btn-info px-3 m-1">+</button>
+</header>
+
+<table class="table">
+    <thead>
+    <tr class="table-secondary">
+        <th scope="col">Id</th>
+        <th scope="col">First Name</th>
+        <th scope="col">Last Name</th>
+        <th scope="col">Type</th>
+        <th scope="col">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    @{
+        var students = Helper.GetStudents();
+        var rowCount = 0;
+    }
+    @foreach (var student in students)
+    {
+        var rowColor = rowCount % 2 == 0 ? "table-info" : "table-light";
+        <tr class=@rowColor>
+            <td>@student.Id</td>
+            <td>@student.FirstName</td>
+            <td>@student.LastName</td>
+            <td>@student.Type</td>
+            <td>[Register link]</td>
+        </tr>
+        rowCount += 1;
+    }
+
+
+    </tbody>
+</table>
+
+@code {
+
+
+}
