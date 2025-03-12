@@ -34,7 +34,7 @@
             <td>@student.FirstName</td>
             <td>@student.LastName</td>
             <td>@student.Type</td>
-            <td><button class="btn btn-outline-secondary" @onclick="(() => NavigateToRegister(@student.Id))">Register</button></td>
+            <td><button class="btn btn-outline-secondary" @onclick="(() => NavigateToRegister(student.Id))">Register</button></td>
         </tr>
         rowCount += 1;
     }
