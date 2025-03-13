@@ -1,10 +1,28 @@
 @page "/register/{studentId:int}"
-<h1>Register</h1>
+@inject NavigationManager Nav
 
-<h3>StudentID: @StudentId</h3>
+@if (students.Exists(student => student.Id == StudentId))
+{
+    <PageTitle>Register</PageTitle>
+    <h1>Register Student</h1>
+
+    <h3>StudentID: @StudentId</h3>
+}
+else
+{
+    RedirectHome();
+}
+
 
 @code {
     [Parameter]
     public int StudentId { get; set; }
-    
+
+    private List<Registrar.Student> students = Helper.GetStudents();
+
+    private void RedirectHome()
+    {
+        Nav.NavigateTo("/");
+    }
+
 }

@@ -18,10 +18,13 @@
     
     private void NavigateToRegister()
     {
-        // to /register/{Id:int}
-        @if (StudentData != null)
+        if (StudentData != null)
         {
             Nav.NavigateTo($"/register/{StudentData.Id}");
+        }
+        else
+        {
+            Nav.NavigateTo("/");
         }
     }
 }
