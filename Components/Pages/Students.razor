@@ -22,21 +22,18 @@
     </thead>
     <tbody>
     
-    @foreach (var student in students)
+    @for (var i = 0; i < students.Count; i++)
     {
-        var rowColor = RowCount % 2 == 0 ? "table-info" : "table-light";
+        var rowColor = i % 2 == 0 ? "table-info" : "table-light";
         <tr class=@rowColor>
-            <Student StudentData=student />
+            <Student StudentData=students[i] />
         </tr>
-        RowCount += 1;
     }
 
     </tbody>
 </table>
 
 @code {
-    private int RowCount { get; set; } = 0;
-    
     private List<Registrar.Student> students = Helper.GetStudents();
 
     private void NavigateToNewStudent()
