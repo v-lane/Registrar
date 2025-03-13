@@ -103,4 +103,10 @@ public class Helper
   public static List<string> GetStudentTypes () {
     return ["Full Time", "Part Time", "Coop"];
   }
+
+  public static string GetStudentFirstNameById(int id)
+  {
+    var student = GetStudents().Find(s => s.Id == id);
+    return student.FirstName;
+  }
 }

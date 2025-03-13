@@ -7,20 +7,28 @@
     <h1>Register Student</h1>
 
     <h3>StudentID: @StudentId</h3>
+    <h3>@StudentName()</h3>
 }
 else
 {
-    RedirectHome();
+    NavigateToStudents();
 }
 
 
 @code {
-    [Parameter]
-    public int StudentId { get; set; }
+    [Parameter] public int StudentId { get; set; }
 
     private List<Registrar.Student> students = Helper.GetStudents();
 
-    private void RedirectHome()
+    private string StudentName()
+    {
+        return Helper.GetStudentFirstNameById(StudentId);
+    }
+
+
+    // private Registrar.Student? studentData = students.Find(s => s.Id == StudentId);
+
+    private void NavigateToStudents()
     {
         Nav.NavigateTo("/");
     }
