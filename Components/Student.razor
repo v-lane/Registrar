@@ -9,11 +9,13 @@
     <td>@StudentData.LastName</td>
     <td>@StudentData.Type</td>
     <td>
-        <button class="btn btn-outline-secondary" @onclick="NavigateToRegister" >Register</button>
+        <Button OnClick="NavigateToRegister" ButtonName="Register" ButtonStyle="btn-outline-secondary"></Button>
     </td>
 }
 
 @code {
+    [Parameter] public Registrar.Student? StudentData { get; set; }
+    
     private void NavigateToRegister()
     {
         // to /register/{Id:int}
@@ -22,10 +24,4 @@
             Nav.NavigateTo($"/register/{StudentData.Id}");
         }
     }
-    
-    [Parameter] 
-    public Registrar.Student? StudentData { get; set; }
-
-    
-
 }
