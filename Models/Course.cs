@@ -9,6 +9,6 @@ public class Course
 
   public override string ToString()
   {
-      return Code + " " + Title + " " + WeeklyHours.ToString() + (WeeklyHours==1 ? "hour":" hours") + " per week";
+      return Code + " " + Title + " - " + WeeklyHours.ToString() + (WeeklyHours==1 ? "hour":" hours") + " per week";
   }
 }

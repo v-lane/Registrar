@@ -1,0 +1,8 @@
+
+<form class="container bg-info bg-opacity-25 p-5">
+    @ChildContent
+</form>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
