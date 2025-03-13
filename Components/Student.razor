@@ -1,0 +1,31 @@
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+
+@if (StudentData != null)
+{
+    <td>@StudentData.Id</td>
+    <td>@StudentData.FirstName</td>
+    <td>@StudentData.LastName</td>
+    <td>@StudentData.Type</td>
+    <td>
+        <button class="btn btn-outline-secondary" @onclick="NavigateToRegister" >Register</button>
+    </td>
+}
+
+@code {
+    private void NavigateToRegister()
+    {
+        // to /register/{Id:int}
+        @if (StudentData != null)
+        {
+            Nav.NavigateTo($"/register/{StudentData.Id}");
+        }
+    }
+    
+    [Parameter] 
+    public Registrar.Student? StudentData { get; set; }
+
+    
+
+}

@@ -1,5 +1,5 @@
 @page "/"
-@inject NavigationManager Nav 
+@inject NavigationManager Nav
 @rendermode InteractiveServer
 
 
@@ -21,35 +21,23 @@
     </tr>
     </thead>
     <tbody>
-
-    @{
-        var students = Helper.GetStudents();
-        var rowCount = 0;
-    }
+    
     @foreach (var student in students)
     {
-        var rowColor = rowCount % 2 == 0 ? "table-info" : "table-light";
+        var rowColor = RowCount % 2 == 0 ? "table-info" : "table-light";
         <tr class=@rowColor>
-            <td>@student.Id</td>
-            <td>@student.FirstName</td>
-            <td>@student.LastName</td>
-            <td>@student.Type</td>
-            <td><button class="btn btn-outline-secondary" @onclick="(() => NavigateToRegister(student.Id))">Register</button></td>
+            <Student StudentData=student />
         </tr>
-        rowCount += 1;
+        RowCount += 1;
     }
-
 
     </tbody>
 </table>
 
 @code {
-
-    private void NavigateToRegister(int id)
-    {
-        // to /register/{Id:int}
-        Nav.NavigateTo($"/register/{id}");
-    }
+    private int RowCount { get; set; } = 0;
+    
+    private List<Registrar.Student> students = Helper.GetStudents();
 
     private void NavigateToNewStudent()
     {
