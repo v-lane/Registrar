@@ -104,9 +104,8 @@ public class Helper
     return ["Full Time", "Part Time", "Coop"];
   }
 
-  public static string GetStudentFirstNameById(int id)
+  public static Student? GetStudentById(int id)
   {
-    var student = GetStudents().Find(s => s.Id == id);
-    return student.FirstName;
+    return GetStudents().Find(s => s.Id == id);
   }
 }

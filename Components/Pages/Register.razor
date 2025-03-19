@@ -12,22 +12,23 @@ else
     <PageTitle>Register</PageTitle>
     <h1>Register Student</h1>
 
-    <Form>
-        <h2 class="mb-4">@StudentName() (ID: @StudentId)</h2>
-        <p>The following courses are currently available for registration:</p>
-        @foreach (var course in courses)
-        {
-        <div class="form-check m-2">
-            <input class="form-check-input" type="checkbox" value="" id="@course.Code">
-            <label class="form-check-label" for="@course.Code">@course.ToString()</label>
+    <EditForm Model="Registration" FormName="RegistrationForm" class="form m-5 bg-info bg-opacity-25 p-5">
+        <h2 class="mb-4">@CurrentStudent.FirstName @CurrentStudent.LastName (ID: @StudentId)</h2>
+        <div class="form-group mx-4">
+            <p>The following courses are currently available for registration:</p>
+            @foreach (var course in Registration.Courses)
+            {
+                <div class="form-check mb-2">
+                    <InputCheckbox class="form-check-input" id="@course.Code" @bind-Value="course.isEnrolled"/>
+                    <label class="form-check-label" for="@course.Code">@course.ToString()</label>
+                </div>
+            }
         </div>
-        }
-        <footer>
+        <footer class="p-2">
             <Button ButtonStyle="btn-success" ButtonName="Register Student"></Button>
             <Button ButtonStyle="btn-danger" ButtonName="Cancel" OnClick="NavigateToStudents"></Button>
         </footer>
-
-    </Form>
+    </EditForm>
 }
 
 
@@ -35,17 +36,33 @@ else
     [Parameter] public int StudentId { get; set; }
 
     private List<Registrar.Student> students = Helper.GetStudents();
-    
+
     private List<Course> courses = Helper.GetCourses();
 
-    private string StudentName()
-    {
-        return Helper.GetStudentFirstNameById(StudentId);
-    }
-    
+    private Registrar.Student? CurrentStudent { get; set; }
+
     private void NavigateToStudents()
     {
         Nav.NavigateTo("/");
     }
 
+    private class RegisterModel
+    {
+        public List<Course> Courses { get; set; } = [];
+    }
+
+    [SupplyParameterFromForm] private RegisterModel Registration { get; set; } = new();
+
+    // private CustomValidation? customValidation;
+
+    protected override void OnInitialized()
+    {
+        
+        CurrentStudent = Helper.GetStudentById(StudentId);
+        
+        foreach (var course in courses)
+        {
+            Registration.Courses.Add(course);
+        }
+    }
 }

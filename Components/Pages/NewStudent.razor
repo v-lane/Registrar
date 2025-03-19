@@ -1,4 +1,5 @@
 @page "/newstudent"
+@using Student = Registrar.Student
 @inject NavigationManager Nav
 @rendermode InteractiveServer
 
@@ -6,36 +7,31 @@
 <PageTitle>Add Student</PageTitle>
 <h1>Add Student</h1>
 
-@* <form class="container bg-info bg-opacity-25 p-5"> *@
-<Form>
-    <div class="mb-3">
+<EditForm Model="AddStudent" FormName="NewStudent" class="form m-5 bg-info bg-opacity-25 p-5">
+    <div class="form-group mb-3">
         <label for="firstName" class="form-label">First Name</label>
-        <input type="text" id="firstName" class="form-control">
+        <InputText type="text" id="firstName" class="form-control" @bind-Value="AddStudent.FirstName"/>
     </div>
-    <div class="mb-3">
+    <div class="form-group mb-3">
         <label for="lastName" class="form-label">Last Name</label>
-        <input type="text" id="lastName" class="form-control">
+        <InputText type="text" id="lastName" class="form-control" @bind-Value="AddStudent.LastName"/>
     </div>
-    <div class="mb-3">
+    <div class="form-group mb-3">
         <label for="studentType" class="form-label">Student Type</label>
-        <select class="form-select" id="studentType">
-            <option selected>Select student type</option>
+        <InputSelect class="form-control" id="studentType" @bind-Value="AddStudent.Type">
+            <option value="">Select student type</option>
             @foreach (var type in studentTypes)
             {
                 <option value="@type">@type</option>
             }
-        </select>
+        </InputSelect>
     </div>
     <footer>
         <Button ButtonStyle="btn-success" ButtonName="Add Student"></Button>
         <Button ButtonStyle="btn-danger" ButtonName="Cancel" OnClick="NavigateToStudents"></Button>
     </footer>
+</EditForm>
 
-</Form>
-
-
-
-@* </form> *@
 
 @code {
     private List<string> studentTypes = Helper.GetStudentTypes();
@@ -44,5 +40,8 @@
     {
         Nav.NavigateTo("/");
     }
+
+    [SupplyParameterFromForm] private Student AddStudent { get; set; } = new();
+
 
 }
