@@ -1,11 +1,12 @@
 @inject NavigationManager Nav
 @rendermode InteractiveServer
 
-<button class="px-3 m-1 btn @ButtonStyle" @onclick="OnClick" @onclick:preventDefault="true" @onclick:stopPropagation="true">@ButtonName</button>
+<button type="@Type" class="px-3 m-1 btn @ButtonStyle" @onclick="OnClick" @onclick:preventDefault="true" @onclick:stopPropagation="true">@ButtonName</button>
 
 @code {
     [Parameter] public string? ButtonName { get; set; }
     [Parameter] public EventCallback OnClick { get; set; }
     [Parameter] public string ButtonStyle { get; set; } = "btn-primary";
+    [Parameter] public string Type { get; set; } = "button";
 
 }
