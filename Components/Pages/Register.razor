@@ -9,7 +9,7 @@
 }
 else
 {
-    <PageTitle>Register</PageTitle>
+    <PageTitle>RegisÎter</PageTitle>
     <h1>Register Student</h1>
 
     <EditForm Model="Registration" FormName="RegistrationForm" class="form m-5 bg-info bg-opacity-25 p-5">
@@ -57,12 +57,12 @@ else
 
     protected override void OnInitialized()
     {
-        
         CurrentStudent = Helper.GetStudentById(StudentId);
-        
+
         foreach (var course in courses)
         {
             Registration.Courses.Add(course);
         }
     }
+
 }
