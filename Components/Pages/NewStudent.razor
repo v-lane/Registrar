@@ -1,5 +1,8 @@
 @page "/newstudent"
-@using Student = Registrar.Student
+@using Student = Registrar.Models.Student
+@using Registrar.Models
+@using Registrar.Data
+@inject RegistrarDbContext context;
 @inject NavigationManager Nav
 @rendermode InteractiveServer
 

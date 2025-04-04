@@ -1,4 +1,6 @@
 @page "/"
+@using Registrar.Models
+@inject RegistrarDbContext context;
 @inject NavigationManager Nav
 @rendermode InteractiveServer
 
@@ -29,16 +31,21 @@
             <Student StudentData=students[i] />
         </tr>
     }
-
+    
     </tbody>
 </table>
 
 @code {
-    private List<Registrar.Student> students = Helper.GetStudents();
+    private List<Registrar.Models.Student>? students { get; set; }
 
     private void NavigateToNewStudent()
     {
         Nav.NavigateTo("/newstudent");
+    }
+    
+    protected override void OnInitialized()
+    {
+        students = context.Students.ToList();
     }
 
 }

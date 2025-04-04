@@ -1,4 +1,7 @@
 @page "/register/{studentId:int}"
+@using Microsoft.EntityFrameworkCore
+@using Registrar.Models
+@inject RegistrarDbContext context;
 @inject NavigationManager Nav
 @rendermode InteractiveServer
 
@@ -19,7 +22,7 @@ else
             @foreach (var course in Registration.Courses)
             {
                 <div class="form-check mb-2">
-                    <InputCheckbox class="form-check-input" id="@course.Code" @bind-Value="course.isEnrolled"/>
+                    <InputCheckbox class="form-check-input" id="@course.Code" @bind-Value="course.IsEnrolled"/>
                     <label class="form-check-label" for="@course.Code">@course.ToString()</label>
                 </div>
             }
@@ -35,11 +38,34 @@ else
 @code {
     [Parameter] public int StudentId { get; set; }
 
-    private List<Registrar.Student> students = Helper.GetStudents();
+    private List<Registrar.Models.Student>? students { get; set; }
 
-    private List<Course> courses = Helper.GetCourses();
+    private List<Registrar.Models.Course> courses { get; set; }
 
-    private Registrar.Student? CurrentStudent { get; set; }
+    private Registrar.Models.Student? CurrentStudent { get; set; }
+
+    private List<Registration>? Registrations { get; set; }
+    
+    private class FormCourse
+    {
+        public int CourseId { get; set; }
+        public string Code { get; set; }
+        public string Title { get; set; }
+        public int WeeklyHours { get; set; }
+        public bool IsEnrolled { get; set; }
+        public override string ToString()
+        {
+            return Code + " " + Title + " - " + WeeklyHours.ToString() + (WeeklyHours == 1 ? " hour" : " hours") +
+                   " per week";
+        }
+    }
+    
+    
+    // await registrations
+    // for course in courses
+    // - create FormCourse
+    // - if courseid code exists in registrations list: set IsEnrolled = true
+    // add FormCourse to FormCourses
 
     private void NavigateToStudents()
     {
@@ -48,7 +74,7 @@ else
 
     private class RegisterModel
     {
-        public List<Course> Courses { get; set; } = [];
+        public List<FormCourse> Courses { get; set; } = [];
     }
 
     [SupplyParameterFromForm] private RegisterModel Registration { get; set; } = new();
@@ -57,12 +83,31 @@ else
 
     protected override void OnInitialized()
     {
-        CurrentStudent = Helper.GetStudentById(StudentId);
+        students = context.Students.ToList();
+
+        courses = context.Courses.ToList();
+
+        CurrentStudent = context.Students.Single(s => s.Id == StudentId);
 
         foreach (var course in courses)
         {
-            Registration.Courses.Add(course);
+            var newCourse = new FormCourse
+            {
+                CourseId = course.Id,
+                Code = course.Code,
+                Title = course.Title,
+                WeeklyHours = course.WeeklyHours
+            };
+            Registration.Courses.Add(newCourse);
         }
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        foreach (var registration in await context.Registrations.Where(r => r.StudentId == StudentId).ToListAsync())
+        {
+            Registration.Courses.Single(c => c.CourseId == registration.CourseId).IsEnrolled = true;
+        }
+    }
+    
 }
