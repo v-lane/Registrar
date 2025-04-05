@@ -6,7 +6,7 @@
 @rendermode InteractiveServer
 
 
-@if (!students.Exists(student => student.Id == StudentId))
+@if (CurrentStudent == null)
 {
     NavigateToStudents();
 }
@@ -37,15 +37,13 @@ else
 
 @code {
     [Parameter] public int StudentId { get; set; }
-
-    private List<Registrar.Models.Student>? students { get; set; }
-
+    
     private List<Registrar.Models.Course> courses { get; set; }
 
     private Registrar.Models.Student? CurrentStudent { get; set; }
 
     private List<Registration>? Registrations { get; set; }
-    
+
     private class FormCourse
     {
         public int CourseId { get; set; }
@@ -53,19 +51,13 @@ else
         public string Title { get; set; }
         public int WeeklyHours { get; set; }
         public bool IsEnrolled { get; set; }
+
         public override string ToString()
         {
             return Code + " " + Title + " - " + WeeklyHours.ToString() + (WeeklyHours == 1 ? " hour" : " hours") +
                    " per week";
         }
     }
-    
-    
-    // await registrations
-    // for course in courses
-    // - create FormCourse
-    // - if courseid code exists in registrations list: set IsEnrolled = true
-    // add FormCourse to FormCourses
 
     private void NavigateToStudents()
     {
@@ -83,11 +75,16 @@ else
 
     protected override void OnInitialized()
     {
-        students = context.Students.ToList();
-
         courses = context.Courses.ToList();
-
-        CurrentStudent = context.Students.Single(s => s.Id == StudentId);
+        
+        try
+        {
+            CurrentStudent = context.Students.Single(s => s.Id == StudentId);
+        }
+        catch
+        {
+            CurrentStudent = null;
+        }
 
         foreach (var course in courses)
         {
@@ -109,5 +106,5 @@ else
             Registration.Courses.Single(c => c.CourseId == registration.CourseId).IsEnrolled = true;
         }
     }
-    
+
 }
