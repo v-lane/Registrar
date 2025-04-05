@@ -153,34 +153,31 @@ else
         }
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        courses = context.Courses.ToList();
-
+        courses = await context.Courses.ToListAsync();
+        
         try
         {
-            CurrentStudent = context.Students.Single(s => s.Id == StudentId);
+            CurrentStudent = await context.Students.SingleAsync(s => s.Id == StudentId);
         }
         catch
         {
             CurrentStudent = null;
         }
 
-        foreach (var course in courses)
+        courses.ForEach(course =>
         {
-            var newCourse = new FormCourse
+            Registration.Courses.Add(new FormCourse
             {
                 CourseId = course.Id,
                 Code = course.Code,
                 Title = course.Title,
                 WeeklyHours = course.WeeklyHours
-            };
-            Registration.Courses.Add(newCourse);
-        }
-    }
+            });
+        });
+        
 
-    protected override async Task OnInitializedAsync()
-    {
         foreach (var registration in await context.Registrations.Where(r => r.StudentId == StudentId).ToListAsync())
         {
             Registration.Courses.Single(c => c.CourseId == registration.CourseId).IsEnrolled = true;

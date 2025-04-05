@@ -1,4 +1,5 @@
 @page "/"
+@using Microsoft.EntityFrameworkCore
 @using Registrar.Models
 @inject RegistrarDbContext context;
 @inject NavigationManager Nav
@@ -36,16 +37,16 @@
 </table>
 
 @code {
-    private List<Registrar.Models.Student>? students { get; set; }
+    private List<Models.Student>? students { get; set; }
 
     private void NavigateToNewStudent()
     {
         Nav.NavigateTo("/newstudent");
     }
     
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        students = context.Students.ToList();
+        students = await context.Students.ToListAsync();
     }
 
 }
