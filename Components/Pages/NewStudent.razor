@@ -10,14 +10,17 @@
 <PageTitle>Add Student</PageTitle>
 <h1>Add Student</h1>
 
-<EditForm Model="AddStudent" FormName="NewStudent" class="form m-5 bg-info bg-opacity-25 p-5">
+<EditForm Model="AddStudent" FormName="NewStudent" OnValidSubmit="AddNewStudent" class="form m-5 bg-info bg-opacity-25 p-5">
+    <DataAnnotationsValidator/>
     <div class="form-group mb-3">
         <label for="firstName" class="form-label">First Name</label>
         <InputText type="text" id="firstName" class="form-control" @bind-Value="AddStudent.FirstName"/>
-    </div>
+        <ValidationMessage For="@(() => AddStudent.FirstName)" class="text-danger"/>
+        </div>
     <div class="form-group mb-3">
         <label for="lastName" class="form-label">Last Name</label>
         <InputText type="text" id="lastName" class="form-control" @bind-Value="AddStudent.LastName"/>
+        <ValidationMessage For="@(() => AddStudent.LastName)" class="text-danger"></ValidationMessage>
     </div>
     <div class="form-group mb-3">
         <label for="studentType" class="form-label">Student Type</label>
@@ -28,9 +31,11 @@
                 <option value="@type">@type</option>
             }
         </InputSelect>
+        <ValidationMessage For="@(() => AddStudent.Type)" class="text-danger"></ValidationMessage>
     </div>
     <footer>
-        <Button ButtonStyle="btn-success" ButtonName="Add Student"></Button>
+        @* <button type="submit">Submit</button> *@
+        <Button Type="submit" ButtonStyle="btn-success" ButtonName="Add Student"></Button>
         <Button ButtonStyle="btn-danger" ButtonName="Cancel" OnClick="NavigateToStudents"></Button>
     </footer>
 </EditForm>
@@ -46,5 +51,11 @@
 
     [SupplyParameterFromForm] private Student AddStudent { get; set; } = new();
 
+    private void AddNewStudent()
+    {
+        context.Students.Add(AddStudent);
+        context.SaveChanges();
+        NavigateToStudents();
+    }
 
 }

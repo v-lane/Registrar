@@ -15,7 +15,10 @@ else
     <PageTitle>RegisÎter</PageTitle>
     <h1>Register Student</h1>
 
-    <EditForm Model="Registration" FormName="RegistrationForm" class="form m-5 bg-info bg-opacity-25 p-5">
+    <EditForm Model="Registration" FormName="RegistrationForm" OnValidSubmit="RegisterStudent"
+              class="form m-5 bg-info bg-opacity-25 p-5">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
         <h2 class="mb-4">@CurrentStudent.FirstName @CurrentStudent.LastName (ID: @StudentId)</h2>
         <div class="form-group mx-4">
             <p>The following courses are currently available for registration:</p>
@@ -28,7 +31,7 @@ else
             }
         </div>
         <footer class="p-2">
-            <Button ButtonStyle="btn-success" ButtonName="Register Student"></Button>
+            <Button Type="submit" ButtonStyle="btn-success" ButtonName="Register Student"></Button>
             <Button ButtonStyle="btn-danger" ButtonName="Cancel" OnClick="NavigateToStudents"></Button>
         </footer>
     </EditForm>
@@ -37,12 +40,10 @@ else
 
 @code {
     [Parameter] public int StudentId { get; set; }
-    
+
     private List<Registrar.Models.Course> courses { get; set; }
 
     private Registrar.Models.Student? CurrentStudent { get; set; }
-
-    private List<Registration>? Registrations { get; set; }
 
     private class FormCourse
     {
@@ -72,11 +73,118 @@ else
     [SupplyParameterFromForm] private RegisterModel Registration { get; set; } = new();
 
     // private CustomValidation? customValidation;
+    private void RegisterStudent()
+    {
+        Console.WriteLine("register button clicked");
+        int totalCourseHours = 0;
+        int totalCourses = 0;
+        bool valid = false;
+        
+        foreach (var course in Registration.Courses)
+        {
+            if (course.IsEnrolled)
+            {
+                totalCourses += 1;
+                totalCourseHours += course.WeeklyHours;
+            }
+        }
+        
+        // validation
+        if (CurrentStudent.Type == "Full Time")
+        {
+            // max weekly hours == 16
+            if (totalCourseHours > 16)
+            {
+                Console.WriteLine("ERROR - Full Time student can only register for max 16 hours of class");
+            }
+            else
+            {
+                Console.WriteLine("Full Time Student course hours ok");
+                valid = true;
+            }
+        }
+        else if (CurrentStudent.Type == "Part Time")
+        {
+            // max courses = 3
+            if (totalCourses > 3)
+            {
+                Console.WriteLine("ERROR - Part Time student can only register for max 3 courses");
+            }
+            else
+            {
+                Console.WriteLine("Part Time Student course number ok");
+                valid = true;
+
+            }
+        }
+        else if (CurrentStudent.Type == "Coop")
+        {
+            // max hours < 5; max courses < 3
+            if (totalCourses > 2 || totalCourseHours > 4)
+            {
+                Console.WriteLine("ERROR - Coop student can only register for max 2 courses/4 hours of class");
+            }
+            else
+            {
+                Console.WriteLine("Coop Student course number/class hours ok");
+                valid = true;
+
+            }
+        }
+
+        // check selections against database; add or delete as needed
+        if (valid)
+        {
+            foreach (var course in Registration.Courses)
+            {
+                Console.WriteLine("in foreach");
+                try
+                {
+                    var registration = context.Registrations.Single(r => (r.CourseId == course.CourseId) && (r.StudentId == StudentId));
+                    Console.WriteLine("registration course Id" + registration.CourseId);
+                    Console.WriteLine("course previously registered");
+                    if (course.IsEnrolled)
+                    {
+                        Console.WriteLine("Want to register; no action");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Want to NOT register; delete entry.");
+                        context.Registrations.Remove(registration);
+                    }
+                }
+                catch
+                {
+                    if (course.IsEnrolled)
+                    {
+                        Console.WriteLine("course not previously registered, WANT to register; create new entry");
+
+                        var newRegistration = new Registration
+                        {
+                            CourseId = course.CourseId,
+                            StudentId = StudentId
+                        };
+                        context.Registrations.Add(newRegistration);
+                    }
+                    else
+                    {
+                        Console.WriteLine("course not previously registered, DON'T want to register; no action");
+                    }
+                }
+
+
+                // save changes, navigate to homepage
+                context.SaveChanges();
+                Console.WriteLine($"Student successfully registered for {totalCourses} courses, {totalCourseHours} hours weekly.");
+                
+            }
+        }
+    }
 
     protected override void OnInitialized()
     {
         courses = context.Courses.ToList();
-        
+
         try
         {
             CurrentStudent = context.Students.Single(s => s.Id == StudentId);
