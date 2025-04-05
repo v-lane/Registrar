@@ -51,10 +51,10 @@
 
     [SupplyParameterFromForm] private Student AddStudent { get; set; } = new();
 
-    private void AddNewStudent()
+    private async Task AddNewStudent()
     {
         context.Students.Add(AddStudent);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
         NavigateToStudents();
     }
 

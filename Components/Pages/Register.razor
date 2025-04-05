@@ -75,7 +75,7 @@ else
     private CustomValidation? customValidation;
 
 
-    private void RegisterStudent()
+    private async Task RegisterStudent()
     {
         customValidation?.ClearErrors();
 
@@ -147,7 +147,7 @@ else
                 }
                 
                 // save changes
-                context.SaveChanges();
+                await context.SaveChangesAsync();
                 Console.WriteLine($"Student successfully registered for {totalCourses} courses, {totalCourseHours} hours weekly.");
             }
         }
