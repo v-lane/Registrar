@@ -17,11 +17,11 @@ else
 
     <EditForm Model="Registration" FormName="RegistrationForm" OnValidSubmit="RegisterStudent"
               class="form m-5 bg-info bg-opacity-25 p-5">
-        <DataAnnotationsValidator/>
-        <ValidationSummary/>
+        <CustomValidation @ref="customValidation"/>
         <h2 class="mb-4">@CurrentStudent.FirstName @CurrentStudent.LastName (ID: @StudentId)</h2>
         <div class="form-group mx-4">
             <p>The following courses are currently available for registration:</p>
+            <ValidationSummary class="alert-danger p-3 list-unstyled"/>
             @foreach (var course in Registration.Courses)
             {
                 <div class="form-check mb-2">
@@ -72,14 +72,19 @@ else
 
     [SupplyParameterFromForm] private RegisterModel Registration { get; set; } = new();
 
-    // private CustomValidation? customValidation;
+    private CustomValidation? customValidation;
+
+
     private void RegisterStudent()
     {
+        customValidation?.ClearErrors();
+
+        var errors = new Dictionary<string, List<string>>();
+
         Console.WriteLine("register button clicked");
         int totalCourseHours = 0;
         int totalCourses = 0;
-        bool valid = false;
-        
+
         foreach (var course in Registration.Courses)
         {
             if (course.IsEnrolled)
@@ -88,68 +93,43 @@ else
                 totalCourseHours += course.WeeklyHours;
             }
         }
-        
+
         // validation
-        if (CurrentStudent.Type == "Full Time")
+        if (CurrentStudent.Type == "Full Time" && totalCourseHours > 16)
         {
             // max weekly hours == 16
-            if (totalCourseHours > 16)
-            {
-                Console.WriteLine("ERROR - Full Time student can only register for max 16 hours of class");
-            }
-            else
-            {
-                Console.WriteLine("Full Time Student course hours ok");
-                valid = true;
-            }
+            errors.Add("Enrollment", ["Full Time students can only register for a maximum of 16 hours of class."]);
+            Console.WriteLine("ERROR - Full Time student can only register for max 16 hours of class");
         }
-        else if (CurrentStudent.Type == "Part Time")
+        else if (CurrentStudent.Type == "Part Time" && totalCourses > 3)
         {
             // max courses = 3
-            if (totalCourses > 3)
-            {
-                Console.WriteLine("ERROR - Part Time student can only register for max 3 courses");
-            }
-            else
-            {
-                Console.WriteLine("Part Time Student course number ok");
-                valid = true;
-
-            }
+            errors.Add("Enrollment", ["Part-Time students can only register for a maximum of 3 courses."]);
+            Console.WriteLine("ERROR - Part Time student can only register for max 3 courses");
         }
-        else if (CurrentStudent.Type == "Coop")
+        else if (CurrentStudent.Type == "Coop" && (totalCourses > 2 || totalCourseHours > 4))
         {
             // max hours < 5; max courses < 3
-            if (totalCourses > 2 || totalCourseHours > 4)
-            {
-                Console.WriteLine("ERROR - Coop student can only register for max 2 courses/4 hours of class");
-            }
-            else
-            {
-                Console.WriteLine("Coop Student course number/class hours ok");
-                valid = true;
-
-            }
+            errors.Add("Enrollment", ["Co-op students can only register for a maximum of 2 courses and 4 hours of class."]);
+            Console.WriteLine("ERROR - Coop student can only register for max 2 courses/4 hours of class");
         }
 
-        // check selections against database; add or delete as needed
-        if (valid)
+        if (errors.Any())
         {
+            customValidation?.DisplayErrors((errors));
+        }
+        else
+        {
+            // check selections against database; add or delete as needed
+
             foreach (var course in Registration.Courses)
             {
                 Console.WriteLine("in foreach");
                 try
                 {
                     var registration = context.Registrations.Single(r => (r.CourseId == course.CourseId) && (r.StudentId == StudentId));
-                    Console.WriteLine("registration course Id" + registration.CourseId);
-                    Console.WriteLine("course previously registered");
-                    if (course.IsEnrolled)
+                    if (!course.IsEnrolled)
                     {
-                        Console.WriteLine("Want to register; no action");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Want to NOT register; delete entry.");
                         context.Registrations.Remove(registration);
                     }
                 }
@@ -157,8 +137,6 @@ else
                 {
                     if (course.IsEnrolled)
                     {
-                        Console.WriteLine("course not previously registered, WANT to register; create new entry");
-
                         var newRegistration = new Registration
                         {
                             CourseId = course.CourseId,
@@ -166,17 +144,11 @@ else
                         };
                         context.Registrations.Add(newRegistration);
                     }
-                    else
-                    {
-                        Console.WriteLine("course not previously registered, DON'T want to register; no action");
-                    }
                 }
-
-
-                // save changes, navigate to homepage
+                
+                // save changes
                 context.SaveChanges();
                 Console.WriteLine($"Student successfully registered for {totalCourses} courses, {totalCourseHours} hours weekly.");
-                
             }
         }
     }
