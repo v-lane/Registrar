@@ -21,7 +21,11 @@ else
         <h2 class="mb-4">@CurrentStudent.FirstName @CurrentStudent.LastName (ID: @StudentId)</h2>
         <div class="form-group mx-4">
             <p>The following courses are currently available for registration:</p>
-            <ValidationSummary class="alert-danger p-3 list-unstyled"/>
+            <ValidationSummary class="alert alert-danger p-3 list-unstyled"/>
+            @if (success)
+            {
+                <div class="alert alert-success">@successMessage</div>
+            }
             @foreach (var course in Registration.Courses)
             {
                 <div class="form-check mb-2">
@@ -42,8 +46,9 @@ else
     [Parameter] public int StudentId { get; set; }
 
     private List<Registrar.Models.Course> courses { get; set; }
-
     private Registrar.Models.Student? CurrentStudent { get; set; }
+    private bool success = false;
+    private string successMessage = "";
 
     private class FormCourse
     {
@@ -78,6 +83,8 @@ else
     private async Task RegisterStudent()
     {
         customValidation?.ClearErrors();
+        success = false;
+        successMessage = "";
 
         var errors = new Dictionary<string, List<string>>();
 
@@ -145,11 +152,12 @@ else
                         context.Registrations.Add(newRegistration);
                     }
                 }
-                
+            }
                 // save changes
                 await context.SaveChangesAsync();
-                Console.WriteLine($"Student successfully registered for {totalCourses} courses, {totalCourseHours} hours weekly.");
-            }
+                successMessage = $"{CurrentStudent.FirstName} {CurrentStudent.LastName}  has registered for {totalCourses} {(totalCourses == 1 ? "course" : "courses")}, {totalCourseHours} {(totalCourses == 1 ? "hour" : "hours")} weekly.";
+                success = true;
+                Console.WriteLine($"{CurrentStudent.FirstName} {CurrentStudent.LastName} successfully registered for {totalCourses} courses, {totalCourseHours} hours weekly.");
         }
     }
 
