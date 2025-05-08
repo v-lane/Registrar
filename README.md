@@ -1,4 +1,3 @@
 # Registrar
 
-## Objective
-Create a database-driven student registration web application using Blazor. 
+Registrar is a database-driven student registration web application using Blazor. 
